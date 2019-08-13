@@ -1,9 +1,8 @@
 package org.springframework.boot.alexa;
 
-import com.amazon.ask.Skill;
-import com.amazon.ask.Skills;
-import com.amazon.ask.dispatcher.request.handler.RequestHandler;
-import com.amazon.ask.servlet.SkillServlet;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -16,7 +15,12 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import com.amazon.ask.Skill;
+import com.amazon.ask.Skills;
+import com.amazon.ask.dispatcher.request.handler.HandlerInput;
+import com.amazon.ask.model.Response;
+import com.amazon.ask.request.handler.GenericRequestHandler;
+import com.amazon.ask.servlet.SkillServlet;
 
 /**
  * Predefined Configuration for using ASK SDK 2.0 in combination with Spring Boot.
@@ -41,6 +45,9 @@ public class AlexaConfiguration {
 
     @Value("${server.port}")
     private int sslPort;
+    
+    @Value("${http.port}")
+    private int httpPort;
 
     @Value("${alexa.skill.id}")
     private String skillId;
@@ -48,10 +55,10 @@ public class AlexaConfiguration {
     @Value("${alexa.skill.endpoint.url}")
     private String endpoint;
 
-    private final List<RequestHandler> requestHandlers;
+    private final List<GenericRequestHandler<HandlerInput, Optional<Response>>> requestHandlers;
 
     @Autowired
-    public AlexaConfiguration(List <RequestHandler> requestHandlers) {
+    public AlexaConfiguration(List<GenericRequestHandler<HandlerInput, Optional<Response>>> requestHandlers) {
         this.requestHandlers = requestHandlers;
     }
 
@@ -74,7 +81,7 @@ public class AlexaConfiguration {
     private Connector redirectConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         connector.setScheme("http");
-        connector.setPort(8080);
+        connector.setPort(httpPort);
         connector.setSecure(false);
         connector.setRedirectPort(sslPort);
         return connector;
