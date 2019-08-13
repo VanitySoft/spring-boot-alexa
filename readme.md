@@ -12,6 +12,9 @@ In your `application.properties` add the following :
 #Your skill id
 alexa.skill.id=
 
+#Choose an port for HTTP that redirects to HTTPS (usually always set to 8080)
+http.port=8080
+
 #Choose an port for HTTPS (every port except 8080)
 server.port=
 
